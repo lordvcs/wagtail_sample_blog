@@ -1,2 +1,3 @@
 wagtail_env
+venv
 *.pyc
