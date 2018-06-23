@@ -1,0 +1,9 @@
+{% load wagtailroutablepage_tags %}
+
+<ul>
+  {% for category in categories %}
+      <li style="display: inline;">
+          <a href="{% routablepageurl blog_page 'post_by_category' category.slug %}">{{category.name}}</a>
+      </li>
+  {% endfor %}
+</ul>

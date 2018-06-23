@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import datetime
 from django.db import models
 from django import forms
+from django.utils.dateformat import DateFormat
+from django.utils.formats import date_format 
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
@@ -28,6 +30,27 @@ class BlogPage(RoutablePageMixin, Page):
     def get_posts(self):
         return PostPage.objects.descendant_of(self).live()
 
+    @route(r'^(\d{4})/$')
+    @route(r'^(\d{4})/(\d{2})/$')
+    @route(r'^(\d{4})/(\d{2})/(\d{2})/$')
+    def post_by_date(self, request, year, month=None, day=None, *args, **kwargs):
+        self.posts = self.get_posts().filter(date__year=year)
+        self.search_type = 'date'
+        self.search_term = year
+        if month:
+            self.posts = self.posts.filter(date__month=month)
+            df = DateFormat(datetime.date(int(year), int(month), 1))
+            self.search_term = df.format('F Y')
+        if day:
+            self.posts = self.posts.filter(date__day=day)
+            self.search_term = date_format(datetime.date(int(year), int(month), int(day)))
+        return Page.serve(self, request, *args, **kwargs)
+
+    @route(r'^(\d{4})/(\d{2})/(\d{2})/(.+)/$')
+    def post_by_date_slug(self, request, year, month, day, slug, *args, **kwargs):
+        post_page = self.get_posts().filter(slug=slug).first()
+        return Page.serve(post_page, request, *args, **kwargs)
+
     @route(r'^tag/(?P<tag>[-\w]+)/$')
     def post_by_tag(self, request, tag, *args, **kwargs):
         self.search_type = 'tag'
@@ -41,6 +64,16 @@ class BlogPage(RoutablePageMixin, Page):
         self.search_type = 'category'
         self.search_term = category
         self.posts = self.get_posts().filter(categories__slug=category)
+        return Page.serve(self, request, *args, **kwargs)
+
+    @route(r'^search/$')
+    def post_search(self, request, *args, **kwargs):
+        search_query = request.GET.get('q',None)
+        self.posts = self.get_posts()
+        if search_query:
+            self.posts = self.posts.filter(body__icontains=search_query)
+            self.search_type = 'search'
+            self.search_term = search_query
         return Page.serve(self, request, *args, **kwargs)
 
     @route(r'^$')

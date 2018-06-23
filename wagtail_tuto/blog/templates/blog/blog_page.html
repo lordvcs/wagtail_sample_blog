@@ -1,12 +1,23 @@
-{% load wagtailcore_tags %}
+{% load static wagtailcore_tags blogapp_tags wagtailroutablepage_tags %}
 
 {% block content %}
+    <link href="{% static 'blog/css/bootstrap.min.css' %}" rel="stylesheet">
+    <form role="search" method="get" class="form-search" action="{% routablepageurl blog_page "post_search" %}" method="get">
+        <div class="input-group">
+            <input type="text" class="form-control search-query" name="q" placeholder="Search&hellip;" title="Search for:" />
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-default" name="submit" id="searchsubmit" value="Search">
+                <span class="glyphicon glyphicon-search"></span>
+              </button>
+            </span>
+        </div>
+    </form>
     <h1>{{ blog_page.title }}</h1>
 
     <div class="intro">{{ blog_page.description }}</div>
 
     {% for post in posts %}
-        <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
+        <h2><a class="btn btn-primary" href="{% post_date_url post blog_page %}">{{ post.title }}</a></h2>
     {% endfor %}
 
 {% endblock %}

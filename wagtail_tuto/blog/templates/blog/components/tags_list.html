@@ -1,0 +1,5 @@
+{% load wagtailroutablepage_tags %}
+
+{% for tag in tags %}
+    <a href="{% routablepageurl blog_page 'post_by_tag' tag.slug %}">{{tag}}</a>
+{% endfor %}

@@ -1,4 +1,4 @@
-{% load wagtailcore_tags wagtailroutablepage_tags %}
+{% load wagtailcore_tags wagtailroutablepage_tags blogapp_tags %}
 
 {% block content %}
     <h1>{{ page.title }}</h1>
@@ -10,21 +10,24 @@
     {% if page.tags.all %}
         <div class="tags">
             <h3>Tags</h3>
-            {% for tag in page.tags.all %}
+            <!-- {% for tag in page.tags.all %}
                 <a href="{% routablepageurl blog_page 'post_by_tag' tag.slug %}">{{tag}}</a>
-            {% endfor %}
+            {% endfor %} -->
+
+            {% tags_list %}
         </div>
     {% endif %}
     {% with categories=page.categories.all %}
         {% if categories %}
             <h3>Categories</h3>
-            <ul>
+            <!-- <ul>
                 {% for category in categories %}
                     <li style="display: inline;">
                         <a href="{% routablepageurl blog_page 'post_by_category' category.slug %}">{{category.name}}</a>
                     </li>
                 {% endfor %}
-            </ul>
+            </ul> -->
+            {% categories_list %}
         {% endif %}
     {% endwith %}
     
