@@ -6,14 +6,19 @@ from django import forms
 from django.utils.dateformat import DateFormat
 from django.utils.formats import date_format 
 from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.fields import RichTextField
-from wagtail.wagtailadmin.edit_handlers import FieldPanel
+from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailcore import blocks
+from wagtail.wagtailembeds.blocks import EmbedBlock 
+from wagtail.wagtailimages.blocks import ImageChooserBlock 
+from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.wagtailsnippets.models import register_snippet
 from modelcluster.fields import ParentalManyToManyField, ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase, Tag as TaggitTag
 from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 from wagtailmd.utils import MarkDownField, MarkDownPanel
+
+from blog.blocks import TwoColumnBlock
 
 class BlogPage(RoutablePageMixin, Page):
     description = models.CharField(max_length=255, blank=True,)
@@ -132,3 +137,19 @@ class BlogPageTag(TaggedItemBase):
 class Tag(TaggitTag):
     class Meta:
         proxy = True
+
+
+class LandingPage(Page):
+    body = StreamField([
+        ('heading', blocks.CharBlock(classname='full title')),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock(icon='image')),
+        ('two_columns', TwoColumnBlock()),
+        ('embedded_video', EmbedBlock(icon='media'))
+    ], null=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        StreamFieldPanel('body')
+    ]
+
+

@@ -1,0 +1,15 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% with blocks=self %}
+  {% for blk in blocks %}
+    {% if blk.block_type == 'heading' %}
+      <h2>{{blk.value}}</h2>
+    {% elif blk.block_type == 'image' %}
+      {% image block.value width-900 class="img-responsive" %}
+    {% else %}
+      <section class="block-{{blk.block_type}}">
+        {{blk}}
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endwith %}

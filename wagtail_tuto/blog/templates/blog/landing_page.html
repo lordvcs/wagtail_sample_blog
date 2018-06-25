@@ -1,0 +1,17 @@
+{% extends "blog/base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+  {% with blocks=self.body %}
+    {% for blk in blocks %}
+      {% if blk.block_type == 'heading' %}
+        <h2>{{ blk.value }}</h2>
+      {% else %}
+        <section class="block-{{blk.block_type}}">
+          {{blk}}
+        </section>
+      {% endif %}
+    {% endfor %}
+  {% endwith %}
+{% endblock content %}
+
